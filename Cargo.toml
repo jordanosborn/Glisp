@@ -1,10 +1,12 @@
 [package]
 name = "glisp"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
 edition = "2018"
 exclude = [
     "test.glisp"
 ]
+license = "MIT"
+description = "A lisp for genetic programming"
 
 [dependencies]
