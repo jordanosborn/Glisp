@@ -8,6 +8,7 @@ exclude = [
 ]
 license = "MIT"
 description = "A lisp for genetic programming"
+documentation = "https://docs.rs/crate/glisp"
 homepage = "https://github.com/jordanosborn/Glisp"
 repository = "https://github.com/jordanosborn/Glisp"
 readme = "README.md"

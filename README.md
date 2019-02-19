@@ -1,5 +1,6 @@
 # Glisp
 [![Crates.io](https://img.shields.io/crates/dv/glisp.svg?colorB=yellow&label=crates.io)](https://crates.io/crates/glisp)
+[![Docs.rs](https://docs.rs/glisp/badge.svg)](https://docs.rs/crate/glisp/)
 [![Coverage Status](https://coveralls.io/repos/github/jordanosborn/Glisp/badge.svg?branch=master)](https://coveralls.io/github/jordanosborn/Glisp?branch=master)
 [![Build Status](https://travis-ci.com/jordanosborn/Glisp.svg?branch=master)](https://travis-ci.com/jordanosborn/Glisp)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/546837eb876347d1bddfbe39075df58c)](https://www.codacy.com/app/jordanosborn/Glisp?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jordanosborn/Glisp&amp;utm_campaign=Badge_Grade)
