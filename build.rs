@@ -4,7 +4,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp(true)
         .include("lib/include")
         .include("/usr/local/include")
-        .flag("-std=c++17")
+        .flag("-std=c++14")
         .compile(output);
 }
 

@@ -37,3 +37,11 @@ impl std::fmt::Display for Node {
 pub fn construct_ast(contents: String) -> Node {
     Node::new()
 }
+
+#[cfg(test)]
+mod tests {
+    // #[test]
+    // fn t() {
+    //     assert!(6 == 6)
+    // }
+}
