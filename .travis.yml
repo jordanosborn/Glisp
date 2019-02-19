@@ -2,7 +2,7 @@ git:
   depth: false
 language: rust
 sudo: required
-dist: trusty
+dist: xenial
 addons:
     apt:
         packages:
