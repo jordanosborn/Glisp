@@ -1,54 +1,28 @@
-#![allow(dead_code, unused_variables)]
-use std::fs;
-use std::env;
+mod parser;
+use parser::{construct_ast, Node};
+#[macro_use]
+mod native_interface;
 
-struct Node {
-    value: String,
-    children: Vec<Node>
-}
-
-impl Node {
-    pub fn value(mut self, value: String) -> Self {
-        self.value = value;
-        self
-    }
-    pub fn add_child(mut self, child: Node) -> Self {
-        self.children.append(&mut vec![child]);
-        self
-    }
-    pub fn add_children(mut self, child: &mut Vec<Node>) -> Self {
-        self.children.append(child);
-        self
-    }
-    pub fn new() -> Node {
-        Node {
-            value: String::from(""),
-            children: Vec::new()
-        }
-    }
-}
-
-impl std::fmt::Display for Node {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "({} ", self.value)?;
-        self.children.iter().for_each(|x| {
-            write!(f, "{}", x).expect("");
-        });
-        write!(f, ")")
-    }
-}
-
-fn build(contents: String) -> Node {
-    Node::new()
-}
+c_function!(i32, test);
 
 fn main() {
-    let args = env::args().collect::<Vec<String>>();
-    let filename = &args[1];
-    let contents = fs::read_to_string(filename)
-        .expect("Something went wrong reading the file");
-    println!("{}", contents);
-    build(contents);
-    let p = Node::new().value(String::from("Hello")).add_child(Node::new().value(String::from("HI"))).add_child(Node::new().value(String::from("Heasthr")));
+    let args = std::env::args().collect::<Vec<String>>();
+    if let Some(filename) = args.get(1) {
+        let contents = std::fs::read_to_string(filename).expect("Something went wrong reading the file");
+        println!("{}", contents);
+        construct_ast(contents);
+    } else {
+        println!("Incorrect number of arguments supplied!");
+    }
+    let p = Node::new()
+        .value("Hello")
+        .add_child(Node::new().value("HI"))
+        .add_children(&mut vec![
+            Node::new().value("Heath"),
+            Node::new().add_child(Node::new().value("Hi")),
+        ]);
     println!("{}", p);
+    unsafe {
+        println!("{}", test());
+    }
 }

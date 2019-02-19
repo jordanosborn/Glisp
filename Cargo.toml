@@ -12,4 +12,11 @@ homepage = "https://github.com/jordanosborn/Glisp"
 repository = "https://github.com/jordanosborn/Glisp"
 readme = "README.md"
 
+[build-dependencies]
+cc = { version = "1.0.29", features = ["parallel"] }
+
+
 [dependencies]
+rayon = "1.0.3"
+maplit = "1.0.1"
+libc = "0.2.48"
