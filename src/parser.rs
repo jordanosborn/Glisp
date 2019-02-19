@@ -35,6 +35,7 @@ impl std::fmt::Display for Node {
 }
 
 pub fn construct_ast(contents: String) -> Node {
+    println!("{}", contents);
     Node::new()
 }
 
