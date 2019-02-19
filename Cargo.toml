@@ -3,5 +3,8 @@ name = "glisp"
 version = "0.1.0"
 authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
 edition = "2018"
+exclude = [
+    "test.glisp"
+]
 
 [dependencies]
