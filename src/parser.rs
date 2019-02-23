@@ -39,7 +39,7 @@ impl std::fmt::Display for Node {
     }
 }
 
-pub fn parse(_tokens: LinkedList<(Token, MetaData)>) -> Result<Node, ErrorCode> {
+pub fn parse<'a>(_filename: &'a str, _tokens: LinkedList<(Token, MetaData)>) -> Result<Node, ErrorCode<'a>> {
     Ok(Node::new())
 }
 

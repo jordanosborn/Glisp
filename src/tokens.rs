@@ -37,11 +37,12 @@ pub enum Token {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct MetaData {
+pub struct MetaData<'a> {
     pub line_no: usize,
     pub start: usize,
     pub end: usize,
     pub line_no_end: Option<usize>,
+    pub filename: &'a str,
 }
 
 #[cfg(test)]

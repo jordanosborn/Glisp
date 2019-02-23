@@ -2,7 +2,7 @@ use crate::errors::{ErrorCode, ErrorCodeList};
 use crate::tokens::*;
 use std::collections::LinkedList;
 
-fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<ErrorCodeList> {
+fn check_closing_tokens<'a>(tokens: LinkedList<(Token, MetaData<'a>)>) -> (Option<ErrorCodeList<'a>>, LinkedList<(Token, MetaData<'a>)>) {
     let mut errs = ErrorCodeList::new();
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
@@ -73,13 +73,13 @@ fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<ErrorC
         }
     }
     if errs.is_empty() {
-        None
+        (None, tokens)
     } else {
-        Some(errs)
+        (Some(errs), tokens)
     }
 }
 
-pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, ErrorCodeList> {
+pub fn tokenize<'a>(filename: &'a str, contents: String) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -89,6 +89,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
         start: 0,
         end: 0,
         line_no_end: None,
+        filename,
     };
     let mut previous_character = '\0';
     for (line_no, line) in lines.iter().enumerate() {
@@ -98,6 +99,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
             start: 0,
             end: 0,
             line_no_end: None,
+            filename,
         };
         let mut inside_comment = false;
         let mut comment_string = String::from("");
@@ -106,6 +108,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
             start: 0,
             end: 0,
             line_no_end: None,
+            filename,
         };
         for (c_index, character) in (*line).char_indices() {
             match character {
@@ -129,6 +132,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                             start: 0,
                             end: 0,
                             line_no_end: None,
+                            filename,
                         };
                         token_stack.push_back((
                             Token::CloseQuote,
@@ -137,6 +141,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                                 start: c_index,
                                 end: c_index,
                                 line_no_end: None,
+                                filename,
                             },
                         ));
                     } else {
@@ -145,6 +150,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                             start: c_index,
                             end: 0,
                             line_no_end: None,
+                            filename,
                         };
                         token_stack.push_back((
                             Token::OpenQuote,
@@ -153,6 +159,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                                 start: c_index,
                                 end: c_index,
                                 line_no_end: None,
+                                filename,
                             },
                         ));
                     }
@@ -169,6 +176,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                         start: c_index,
                         end: c_index,
                         line_no_end: None,
+                        filename,
                     },
                 )),
                 ')' if previous_character != '\\' => token_stack.push_back((
@@ -178,6 +186,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                         start: c_index,
                         end: c_index,
                         line_no_end: None,
+                        filename,
                     },
                 )),
                 ' ' | '\t' => {
@@ -195,6 +204,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                             start: 0,
                             end: 0,
                             line_no_end: None,
+                            filename,
                         };
                     }
                 }
@@ -205,6 +215,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                             line_no,
                             end: c_index,
                             line_no_end: None,
+                            filename,
                         };
                     }
                     other_string.push(c);
@@ -241,20 +252,24 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Error
                     start: line.len(),
                     end: line.len(),
                     line_no_end: None,
+                    filename,
                 },
             ));
         }
     }
-    if let Some(errs) = check_closing_tokens(&token_stack) {
+
+    let (valid_closing_tokens, token_stack) = check_closing_tokens(token_stack);
+    if let Some(errs) = valid_closing_tokens {
         Err(errs)
     } else {
-        tokenize_pass2(token_stack)
+        let token_stack = tokenize_pass2(token_stack);
+        token_stack
     }
 }
 
-fn tokenize_pass2(
-    tokens: LinkedList<(Token, MetaData)>,
-) -> Result<LinkedList<(Token, MetaData)>, ErrorCodeList> {
+fn tokenize_pass2<'a> (
+    tokens: LinkedList<(Token, MetaData<'a>)>,
+) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     Ok(tokens)
 }
 

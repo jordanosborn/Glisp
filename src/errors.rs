@@ -1,14 +1,15 @@
 use crate::tokens;
-#[derive(Debug)]
-pub enum ErrorCode {
+#[derive(Debug, Clone)]
+pub enum ErrorCode<'a> {
     General(String),
-    SyntaxError(String, tokens::Token, tokens::MetaData),
+    SyntaxError(String, tokens::Token, tokens::MetaData<'a>),
 }
 
-pub struct ErrorCodeList(Vec<ErrorCode>);
 
-impl ErrorCodeList {
-    pub fn new() -> ErrorCodeList {
+pub struct ErrorCodeList<'a>(Vec<ErrorCode<'a>>);
+
+impl<'a> ErrorCodeList<'a> {
+    pub fn new() -> ErrorCodeList<'a> {
         ErrorCodeList(Vec::new())
     }
 
@@ -16,7 +17,7 @@ impl ErrorCodeList {
         ErrorCodeList(v)
     }
 
-    pub fn push(&mut self, err: ErrorCode) {
+    pub fn push(&mut self, err: ErrorCode<'a>) {
         self.0.push(err);
     }
 
@@ -25,7 +26,7 @@ impl ErrorCodeList {
     }
 }
 
-impl std::fmt::Display for ErrorCode {
+impl<'a> std::fmt::Display for ErrorCode<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             ErrorCode::General(s) => write!(f, "{}", s),
@@ -33,14 +34,14 @@ impl std::fmt::Display for ErrorCode {
                 if let Some(end_line) = metadata.line_no_end {
                     write!(
                         f,
-                        "Error at {}: {}, {}: {} -> {}",
-                        metadata.line_no, metadata.start, end_line, metadata.end, string
+                        "Error in {} at {}: {}, {}: {} -> {}",
+                        metadata.filename, metadata.line_no, metadata.start, end_line, metadata.end, string
                     )
                 } else {
                     write!(
                         f,
-                        "Error at {}: {}, {}: {} -> {}",
-                        metadata.line_no, metadata.start, metadata.line_no, metadata.end, string
+                        "Error in {} at {}: {}, {}: {} -> {}",
+                        metadata.filename, metadata.line_no, metadata.start, metadata.line_no, metadata.end, string
                     )
                 }
             }
@@ -48,7 +49,7 @@ impl std::fmt::Display for ErrorCode {
     }
 }
 
-impl std::fmt::Display for ErrorCodeList {
+impl<'a> std::fmt::Display for ErrorCodeList<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         for (index, err) in self.0.iter().enumerate() {
             writeln!(f, "({}):\t {}", index, err)?;
