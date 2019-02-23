@@ -10,11 +10,11 @@
             "name": "Cargo launch",
             "cargo": {
                 "args": [
-                    "build",
+                    "build"
                 ]
             },
             "program": "${cargo:program}",
             "args": []
-        },
+        }
     ]
 }
