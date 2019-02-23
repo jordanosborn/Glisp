@@ -1,4 +1,4 @@
-use crate::tokens::*;
+use super::tokens::*;
 use std::collections::LinkedList;
 
 pub struct Node {
@@ -39,7 +39,10 @@ impl std::fmt::Display for Node {
     }
 }
 
-pub fn parse<'a>(_filename: &'a str, _tokens: LinkedList<(Token, MetaData)>) -> Result<Node, ErrorCode<'a>> {
+pub fn parse<'a>(
+    _filename: &'a str,
+    _tokens: LinkedList<(Token, MetaData)>,
+) -> Result<Node, ErrorCode<'a>> {
     Ok(Node::new())
 }
 

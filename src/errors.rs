@@ -5,7 +5,6 @@ pub enum ErrorCode<'a> {
     SyntaxError(String, tokens::Token, tokens::MetaData<'a>),
 }
 
-
 pub struct ErrorCodeList<'a>(Vec<ErrorCode<'a>>);
 
 impl<'a> ErrorCodeList<'a> {
@@ -35,13 +34,23 @@ impl<'a> std::fmt::Display for ErrorCode<'a> {
                     write!(
                         f,
                         "{} at {}: {}, {}: {} ->\n\t\t{}",
-                        metadata.filename, metadata.line_no, metadata.start, end_line, metadata.end, string
+                        metadata.filename,
+                        metadata.line_no,
+                        metadata.start,
+                        end_line,
+                        metadata.end,
+                        string
                     )
                 } else {
                     write!(
                         f,
                         "{} at {}: {}, {}: {} ->\n\t{}",
-                        metadata.filename, metadata.line_no, metadata.start, metadata.line_no, metadata.end, string
+                        metadata.filename,
+                        metadata.line_no,
+                        metadata.start,
+                        metadata.line_no,
+                        metadata.end,
+                        string
                     )
                 }
             }

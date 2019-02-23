@@ -1,8 +1,7 @@
 #![allow(dead_code)]
+mod compiler;
 mod errors;
-mod parser;
-mod tokenizer;
-mod tokens;
+use compiler::{parser, tokenizer, tokens};
 
 #[macro_use]
 mod native_interface;

@@ -1,8 +1,10 @@
+use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
-use crate::tokens::*;
 use std::collections::LinkedList;
 
-fn check_closing_tokens<'a>(tokens: LinkedList<(Token, MetaData<'a>)>) -> (Option<ErrorCodeList<'a>>, LinkedList<(Token, MetaData<'a>)>) {
+fn check_closing_tokens<'a>(
+    tokens: LinkedList<(Token, MetaData<'a>)>,
+) -> (Option<ErrorCodeList<'a>>, LinkedList<(Token, MetaData<'a>)>) {
     let mut errs = ErrorCodeList::new();
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
@@ -79,7 +81,10 @@ fn check_closing_tokens<'a>(tokens: LinkedList<(Token, MetaData<'a>)>) -> (Optio
     }
 }
 
-pub fn tokenize<'a>(filename: &'a str, contents: String) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
+pub fn tokenize<'a>(
+    filename: &'a str,
+    contents: String,
+) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -262,12 +267,11 @@ pub fn tokenize<'a>(filename: &'a str, contents: String) -> Result<LinkedList<(T
     if let Some(errs) = valid_closing_tokens {
         Err(errs)
     } else {
-        let token_stack = tokenize_pass2(token_stack);
-        token_stack
+        tokenize_pass2(token_stack)
     }
 }
 
-fn tokenize_pass2<'a> (
+fn tokenize_pass2<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
 ) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     Ok(tokens)
