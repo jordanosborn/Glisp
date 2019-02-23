@@ -34,13 +34,13 @@ impl<'a> std::fmt::Display for ErrorCode<'a> {
                 if let Some(end_line) = metadata.line_no_end {
                     write!(
                         f,
-                        "Error in {} at {}: {}, {}: {} -> {}",
+                        "{} at {}: {}, {}: {} ->\n\t\t{}",
                         metadata.filename, metadata.line_no, metadata.start, end_line, metadata.end, string
                     )
                 } else {
                     write!(
                         f,
-                        "Error in {} at {}: {}, {}: {} -> {}",
+                        "{} at {}: {}, {}: {} ->\n\t{}",
                         metadata.filename, metadata.line_no, metadata.start, metadata.line_no, metadata.end, string
                     )
                 }
@@ -51,8 +51,9 @@ impl<'a> std::fmt::Display for ErrorCode<'a> {
 
 impl<'a> std::fmt::Display for ErrorCodeList<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        writeln!(f, "Errors")?;
         for (index, err) in self.0.iter().enumerate() {
-            writeln!(f, "({}):\t {}", index, err)?;
+            writeln!(f, "({}): {}", index, err)?;
         }
         write!(f, "")
     }
