@@ -1,6 +1,8 @@
+use crate::tokens;
 #[derive(Debug)]
 pub enum ErrorCode {
-    GENERAL(String),
+    General(String),
+    SyntaxError(String, tokens::Token, tokens::MetaData),
 }
 
 #[cfg(test)]

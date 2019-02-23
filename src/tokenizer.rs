@@ -2,9 +2,57 @@ use crate::errors::ErrorCode;
 use crate::tokens::*;
 use std::collections::LinkedList;
 
-//TODO: Check for matching closing tokens report errors
-fn check_closing_tokens(_tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
-    None
+fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
+    let mut errs = Vec::new();
+    let mut unmatched_tokens = Vec::new();
+    for (token, metadata) in tokens.iter() {
+        match token {
+            Token::OpenBrace | Token::OpenQuote => {
+                unmatched_tokens.push((token, metadata));
+            }
+            Token::CloseQuote => {
+                if let Some(t) = unmatched_tokens.last() {
+                    if *t.0 == Token::OpenQuote {
+                        unmatched_tokens.pop();
+                    } else {
+                        errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing quote '\"'!") , Token::CloseQuote, *metadata));
+                    }
+                } else {
+                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing quote '\"'!") , Token::CloseQuote, *metadata));
+                }
+            }
+            Token::CloseBrace => {
+                if let Some(t) = unmatched_tokens.last() {
+                    if *t.0 == Token::OpenBrace  {
+                        unmatched_tokens.pop();
+                    } else {
+                        errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing brace ')' !") , Token::CloseBrace, *metadata));
+                    }
+                } else {
+                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing brace ')' !") , Token::CloseBrace, *metadata));
+                }
+            }
+            _ => {}
+        }
+    }
+    if ! unmatched_tokens.is_empty() {
+        for (token, metadata) in unmatched_tokens.iter() {
+            match token {
+                Token::OpenQuote => {
+                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched opening quote '\"'!") , Token::OpenQuote, **metadata));
+                }
+                Token::OpenBrace => {
+                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched opening brace '(' !") , Token::OpenBrace, **metadata));
+                }
+                _ => {}
+            }
+        }
+    }
+    if errs.is_empty() {
+        None
+    } else {
+        Some(errs)
+    }
 }
 
 pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
@@ -185,7 +233,6 @@ fn tokenize_pass2(
 ) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     Ok(tokens)
 }
-
 
 #[cfg(test)]
 mod tests {

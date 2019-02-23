@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Type {
     RATIONAL,
     INTEGER,
@@ -6,13 +6,13 @@ pub enum Type {
     STRING,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Keyword {
     FUNC,
     PRINT,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Rational {
     pub numerator: i64,
     pub denominator: i64,
@@ -20,7 +20,7 @@ pub struct Rational {
 
 impl Rational {}
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     OpenBrace,
     CloseBrace,
@@ -36,7 +36,7 @@ pub enum Token {
     Newline,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct MetaData {
     pub line_no: usize,
     pub start: usize,
