@@ -8,7 +8,7 @@ pub enum Type {
 
 #[derive(Debug)]
 pub enum Keyword {
-    DEFUN,
+    FUNC,
     PRINT,
 }
 

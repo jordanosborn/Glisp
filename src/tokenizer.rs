@@ -31,7 +31,7 @@ fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<Er
     None
 }
 
-pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     let lines = contents.split("\n").collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -200,10 +200,10 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
     if let Some(errs) = check_closing_tokens(&token_stack) {
         Err(errs)
     } else {
-        tokenizer_pass2(token_stack)
+        tokenize_pass2(token_stack)
     }
 }
 
-fn tokenizer_pass2(tokens: LinkedList<(Token, MetaData)>) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+fn tokenize_pass2(tokens: LinkedList<(Token, MetaData)>) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     Ok(tokens)
 }

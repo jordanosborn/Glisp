@@ -1,11 +1,8 @@
-#[macro_use]
-extern crate lazy_static;
 mod errors;
 mod parser;
 mod tokenizer;
 mod types;
 
-use parser::construct_ast;
 #[macro_use]
 mod native_interface;
 
@@ -14,7 +11,7 @@ fn main() {
     if let Some(filename) = args.get(1) {
         let contents =
             std::fs::read_to_string(filename).expect("Something went wrong reading the file");
-        println!("{:?}", tokenizer::tokenizer(contents));
+        println!("{:?}", tokenizer::tokenize(contents));
     // match construct_ast(contents) {
     //     Ok(node) => {
     //         println!("{}", node);
