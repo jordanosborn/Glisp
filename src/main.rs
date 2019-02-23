@@ -17,14 +17,19 @@ fn main() {
     if let Some(filename) = args.get(1) {
         let contents =
             std::fs::read_to_string(filename).expect("Something went wrong reading the file");
-       match tokenizer::tokenize(contents) {
-            Ok(t) => {
-                println!("{:?}", t);
-            }
+        match tokenizer::tokenize(contents) {
+            Ok(t) => match parser::parse(t) {
+                Ok(t) => {
+                    println!("{}", t);
+                }
+                Err(e) => {
+                    println!("{}", e);
+                }
+            },
             Err(e) => {
-                println!("{:?}", e);
+                println!("{}", e);
             }
-       }
+        }
     } else {
         println!("Incorrect number of arguments supplied!");
     }

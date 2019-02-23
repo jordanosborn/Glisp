@@ -1,9 +1,9 @@
-use crate::errors::ErrorCode;
+use crate::errors::{ErrorCode, ErrorCodeList};
 use crate::tokens::*;
 use std::collections::LinkedList;
 
-fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
-    let mut errs = Vec::new();
+fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<ErrorCodeList> {
+    let mut errs = ErrorCodeList::new();
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
         match token {
@@ -15,34 +15,58 @@ fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<Er
                     if *t.0 == Token::OpenQuote {
                         unmatched_tokens.pop();
                     } else {
-                        errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing quote '\"'!") , Token::CloseQuote, *metadata));
+                        errs.push(ErrorCode::SyntaxError(
+                            String::from("Unmatched closing quote '\"'!"),
+                            Token::CloseQuote,
+                            *metadata,
+                        ));
                     }
                 } else {
-                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing quote '\"'!") , Token::CloseQuote, *metadata));
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched closing quote '\"'!"),
+                        Token::CloseQuote,
+                        *metadata,
+                    ));
                 }
             }
             Token::CloseBrace => {
                 if let Some(t) = unmatched_tokens.last() {
-                    if *t.0 == Token::OpenBrace  {
+                    if *t.0 == Token::OpenBrace {
                         unmatched_tokens.pop();
                     } else {
-                        errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing brace ')' !") , Token::CloseBrace, *metadata));
+                        errs.push(ErrorCode::SyntaxError(
+                            String::from("Unmatched closing brace ')' !"),
+                            Token::CloseBrace,
+                            *metadata,
+                        ));
                     }
                 } else {
-                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched closing brace ')' !") , Token::CloseBrace, *metadata));
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched closing brace ')' !"),
+                        Token::CloseBrace,
+                        *metadata,
+                    ));
                 }
             }
             _ => {}
         }
     }
-    if ! unmatched_tokens.is_empty() {
+    if !unmatched_tokens.is_empty() {
         for (token, metadata) in unmatched_tokens.iter() {
             match token {
                 Token::OpenQuote => {
-                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched opening quote '\"'!") , Token::OpenQuote, **metadata));
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched opening quote '\"'!"),
+                        Token::OpenQuote,
+                        **metadata,
+                    ));
                 }
                 Token::OpenBrace => {
-                    errs.push(ErrorCode::SyntaxError(String::from("Unmatched opening brace '(' !") , Token::OpenBrace, **metadata));
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched opening brace '(' !"),
+                        Token::OpenBrace,
+                        **metadata,
+                    ));
                 }
                 _ => {}
             }
@@ -55,7 +79,7 @@ fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<Er
     }
 }
 
-pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, ErrorCodeList> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -230,7 +254,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
 
 fn tokenize_pass2(
     tokens: LinkedList<(Token, MetaData)>,
-) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+) -> Result<LinkedList<(Token, MetaData)>, ErrorCodeList> {
     Ok(tokens)
 }
 
