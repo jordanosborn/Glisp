@@ -200,6 +200,10 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
     if let Some(errs) = check_closing_tokens(&token_stack) {
         Err(errs)
     } else {
-        Ok(token_stack)
+        tokenizer_pass2(token_stack)
     }
+}
+
+fn tokenizer_pass2(tokens: LinkedList<(Token, MetaData)>) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+    Ok(tokens)
 }
