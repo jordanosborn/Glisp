@@ -1,4 +1,5 @@
 # Glisp
+![GitHub](https://img.shields.io/github/license/jordanosborn/glisp.svg)
 [![Crates.io](https://img.shields.io/crates/dv/glisp.svg?colorB=yellow&label=crates.io)](https://crates.io/crates/glisp)
 [![Docs.rs](https://docs.rs/glisp/badge.svg)](https://docs.rs/crate/glisp/)
 [![Coverage Status](https://coveralls.io/repos/github/jordanosborn/Glisp/badge.svg?branch=master)](https://coveralls.io/github/jordanosborn/Glisp?branch=master)
