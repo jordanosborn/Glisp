@@ -7,20 +7,21 @@ mod tokens;
 #[macro_use]
 mod native_interface;
 
+fn parse_args() -> Vec<String> {
+    std::env::args().collect::<Vec<String>>()
+}
+
 fn main() {
-    let args = std::env::args().collect::<Vec<String>>();
+    //TODO: Parallelize multiple files/ Libs to compile
+    let args = parse_args();
     if let Some(filename) = args.get(1) {
         let contents =
             std::fs::read_to_string(filename).expect("Something went wrong reading the file");
-        println!("{:?}", tokenizer::tokenize(contents));
-    // match construct_ast(contents) {
-    //     Ok(node) => {
-    //         println!("{}", node);
-    //     }
-    //     Err(errors::ErrorCode::GENERAL(a)) => {
-    //         println!("{}", a);
-    //     }
-    // };
+        let tokens = tokenizer::tokenize(contents);
+        match tokens {
+            Ok(t) => println!("{:?}", t),
+            Err(_) => {}
+        }
     } else {
         println!("Incorrect number of arguments supplied!");
     }

@@ -180,6 +180,8 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
     }
 }
 
-fn tokenize_pass2(tokens: LinkedList<(Token, MetaData)>) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
+fn tokenize_pass2(
+    tokens: LinkedList<(Token, MetaData)>,
+) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     Ok(tokens)
 }

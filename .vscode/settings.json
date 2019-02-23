@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
         "glisp",
-        "maplit"
+        "maplit",
+        "parallelize"
     ],
     "cSpell.enabledLanguageIds": [
         "asciidoc",

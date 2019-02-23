@@ -1,5 +1,5 @@
-use std::collections::LinkedList;
 use crate::tokens::*;
+use std::collections::LinkedList;
 
 pub struct Node {
     pub value: String,
