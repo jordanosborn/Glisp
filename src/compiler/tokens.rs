@@ -3,6 +3,7 @@ pub enum Type {
     RATIONAL,
     INTEGER,
     FLOAT,
+    DECIMAL,
     STRING,
 }
 
