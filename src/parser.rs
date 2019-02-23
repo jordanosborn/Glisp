@@ -1,3 +1,6 @@
+use std::collections::LinkedList;
+use crate::tokenizer::{MetaData, Token};
+
 pub struct Node {
     pub value: String,
     pub children: Vec<Node>,
@@ -36,7 +39,7 @@ impl std::fmt::Display for Node {
     }
 }
 
-pub fn parse(contents: String) -> Result<Node, ErrorCode> {
+pub fn parse(_tokens: LinkedList<(Token, MetaData)>) -> Result<Node, ErrorCode> {
     Ok(Node::new())
 }
 

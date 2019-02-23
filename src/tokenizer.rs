@@ -27,12 +27,12 @@ pub struct MetaData {
 }
 
 //TODO: Check for matching closing tokens report errors
-fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
+fn check_closing_tokens(_tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
     None
 }
 
 pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
-    let lines = contents.split("\n").collect::<Vec<&str>>();
+    let lines = contents.split('\n').collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
     let mut string_string = String::from("");
@@ -93,7 +93,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
                         ));
                     } else {
                         string_metadata = MetaData {
-                            line_no: line_no,
+                            line_no,
                             start: c_index,
                             end: 0,
                             line_no_end: None,
@@ -133,7 +133,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
                     },
                 )),
                 ' ' | '\t' => {
-                    if other_string.len() != 0 {
+                    if !other_string.is_empty() {
                         token_stack.push_back((
                             Token::Other(other_string),
                             MetaData {
@@ -151,7 +151,7 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
                     }
                 }
                 c if !(inside_string || inside_comment) => {
-                    if other_string.len() == 0 {
+                    if other_string.is_empty() {
                         other_string_metadata = MetaData {
                             start: c_index,
                             line_no,
@@ -165,16 +165,16 @@ pub fn tokenize(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<E
             }
             previous_character = character;
         }
-        if comment_string.len() != 0 {
+        if !comment_string.is_empty() {
             token_stack.push_back((
-                Token::Comment(String::from(comment_string)),
+                Token::Comment(comment_string),
                 MetaData {
                     end: line.len() - 1,
                     ..comment_metadata
                 },
             ))
         }
-        if other_string.len() != 0 {
+        if !other_string.is_empty() {
             token_stack.push_back((
                 Token::Other(other_string),
                 MetaData {

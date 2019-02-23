@@ -4,7 +4,7 @@ version = "0.0.3"
 authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
 edition = "2018"
 exclude = [
-    "test.glisp"
+    "examples/test.glisp"
 ]
 license = "MIT"
 description = "A lisp for genetic programming"
