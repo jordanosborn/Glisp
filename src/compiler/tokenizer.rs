@@ -9,7 +9,7 @@ fn check_closing_tokens<'a>(
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
         match token {
-            Token::OpenBrace | Token::OpenQuote => {
+            Token::OpenBrace | Token::OpenQuote | Token::OpenSquareBrace | Token::OpenCurlyBrace | Token::OpenAngularBrace => {
                 unmatched_tokens.push((token, metadata));
             }
             Token::CloseQuote => {
@@ -50,6 +50,63 @@ fn check_closing_tokens<'a>(
                     ));
                 }
             }
+            Token::CloseSquareBrace => {
+                if let Some(t) = unmatched_tokens.last() {
+                    if *t.0 == Token::OpenSquareBrace {
+                        unmatched_tokens.pop();
+                    } else {
+                        errs.push(ErrorCode::SyntaxError(
+                            String::from("Unmatched closing square brace ']' !"),
+                            Token::CloseSquareBrace,
+                            *metadata,
+                        ));
+                    }
+                } else {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched closing square brace ']' !"),
+                        Token::CloseSquareBrace,
+                        *metadata,
+                    ));
+                }
+            }
+            Token::CloseCurlyBrace => {
+                if let Some(t) = unmatched_tokens.last() {
+                    if *t.0 == Token::OpenCurlyBrace {
+                        unmatched_tokens.pop();
+                    } else {
+                        errs.push(ErrorCode::SyntaxError(
+                            String::from("Unmatched closing curly brace '}' !"),
+                            Token::CloseCurlyBrace,
+                            *metadata,
+                        ));
+                    }
+                } else {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched closing curly brace '}' !"),
+                        Token::CloseSquareBrace,
+                        *metadata,
+                    ));
+                }
+            }
+            Token::CloseAngularBrace => {
+                if let Some(t) = unmatched_tokens.last() {
+                    if *t.0 == Token::OpenAngularBrace {
+                        unmatched_tokens.pop();
+                    } else {
+                        errs.push(ErrorCode::SyntaxError(
+                            String::from("Unmatched closing angular brace '>' !"),
+                            Token::CloseAngularBrace,
+                            *metadata,
+                        ));
+                    }
+                } else {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched closing angular brace '>' !"),
+                        Token::CloseAngularBrace,
+                        *metadata,
+                    ));
+                }
+            }
             _ => {}
         }
     }
@@ -67,6 +124,27 @@ fn check_closing_tokens<'a>(
                     errs.push(ErrorCode::SyntaxError(
                         String::from("Unmatched opening brace '(' !"),
                         Token::OpenBrace,
+                        **metadata,
+                    ));
+                }
+                Token::OpenSquareBrace => {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched opening square brace '[' !"),
+                        Token::OpenSquareBrace,
+                        **metadata,
+                    ));
+                }
+                Token::OpenCurlyBrace => {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched opening curly brace '{' !"),
+                        Token::OpenCurlyBrace,
+                        **metadata,
+                    ));
+                }
+                Token::OpenAngularBrace => {
+                    errs.push(ErrorCode::SyntaxError(
+                        String::from("Unmatched opening angular brace '<' !"),
+                        Token::OpenAngularBrace,
                         **metadata,
                     ));
                 }
@@ -186,6 +264,66 @@ pub fn tokenize<'a>(
                 )),
                 ')' if previous_character != '\\' => token_stack.push_back((
                     Token::CloseBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                '[' if previous_character != '\\' => token_stack.push_back((
+                    Token::OpenSquareBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                ']' if previous_character != '\\' => token_stack.push_back((
+                    Token::CloseSquareBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                '{' if previous_character != '\\' => token_stack.push_back((
+                    Token::OpenCurlyBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                '}' if previous_character != '\\' => token_stack.push_back((
+                    Token::CloseCurlyBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                '<' if previous_character != '\\' => token_stack.push_back((
+                    Token::OpenAngularBrace,
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    },
+                )),
+                '>' if previous_character != '\\' => token_stack.push_back((
+                    Token::CloseAngularBrace,
                     MetaData {
                         line_no,
                         start: c_index,

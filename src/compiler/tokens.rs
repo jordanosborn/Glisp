@@ -24,6 +24,12 @@ impl Rational {}
 pub enum Token {
     OpenBrace,
     CloseBrace,
+    OpenSquareBrace,
+    CloseSquareBrace,
+    OpenCurlyBrace,
+    CloseCurlyBrace,
+    OpenAngularBrace,
+    CloseAngularBrace,
     OpenQuote,
     CloseQuote,
     Ident,
