@@ -1,30 +1,6 @@
 use crate::errors::ErrorCode;
-use crate::types::*;
+use crate::tokens::*;
 use std::collections::LinkedList;
-
-#[derive(Debug)]
-pub enum Token {
-    OpenBrace,
-    CloseBrace,
-    OpenQuote,
-    CloseQuote,
-    Ident,
-    Type(Type),
-    Builtin(Keyword),
-    String(String),
-    Comment(String),
-    Rational(Rational),
-    Other(String),
-    Newline,
-}
-
-#[derive(Debug)]
-pub struct MetaData {
-    pub line_no: usize,
-    pub start: usize,
-    pub end: usize,
-    pub line_no_end: Option<usize>,
-}
 
 //TODO: Check for matching closing tokens report errors
 fn check_closing_tokens(_tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {

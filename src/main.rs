@@ -2,7 +2,7 @@
 mod errors;
 mod parser;
 mod tokenizer;
-mod types;
+mod tokens;
 
 #[macro_use]
 mod native_interface;
