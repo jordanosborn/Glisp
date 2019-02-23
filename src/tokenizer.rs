@@ -6,12 +6,15 @@ use std::collections::LinkedList;
 pub enum Token {
     OpenBrace,
     CloseBrace,
+    OpenQuote,
+    CloseQuote,
     Ident,
     Type(Type),
     Builtin(Keyword),
     String(String),
     Comment(String),
     Rational(Rational),
+    Other(String),
     Newline,
 }
 
@@ -23,7 +26,12 @@ pub struct MetaData {
     pub line_no_end: Option<usize>
 }
 
-pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
+//TODO: Check for matching closing tokens report errors
+fn check_closing_tokens(tokens: &LinkedList<(Token, MetaData)>) -> Option<Vec<ErrorCode>> {
+    None
+}
+
+pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     let lines = contents.split("\n").collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -52,14 +60,14 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                 '"' if ! inside_comment  && previous_character != '\\' => {
                     if inside_string {
                         token_stack.push_back(
-                          (
-                              Token::String(string_string),
-                              MetaData {
-                                  end: c_index,
-                                  line_no_end: Some(line_no),
-                                  ..string_metadata
-                              }
-                          )
+                        (
+                            Token::String(string_string),
+                            MetaData {
+                                end: c_index,
+                                line_no_end: Some(line_no),
+                                ..string_metadata
+                            }
+                        )
                         );
                         string_string = String::from("");
                         string_metadata = MetaData {
@@ -68,6 +76,14 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                             end: 0,
                             line_no_end: None
                         };
+                        token_stack.push_back((Token::CloseQuote,
+                            MetaData {
+                                line_no,
+                                start: c_index,
+                                end: c_index,
+                                line_no_end: None
+                            })
+                        );
 
                     } else {
                         string_metadata = MetaData {
@@ -76,7 +92,14 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                             end: 0,
                             line_no_end: None
                         };
-
+                        token_stack.push_back((Token::OpenQuote,
+                            MetaData {
+                                line_no,
+                                start: c_index,
+                                end: c_index,
+                                line_no_end: None
+                            })
+                        );
                     }
                     inside_string = !inside_string;
 
@@ -104,7 +127,9 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                     inside_comment = true;
                     comment_metadata.start = c_index;
                 }
-                _ => {}
+                _ => {
+
+                }
             }
             previous_character = character;
         }
@@ -131,5 +156,10 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
         ));
         }
     }
-    token_stack
+    if let Some(errs) = check_closing_tokens(&token_stack) {
+        Err(errs)
+    } else {
+        Ok(token_stack)
+    }
+
 }
