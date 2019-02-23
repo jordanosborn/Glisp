@@ -185,3 +185,12 @@ fn tokenize_pass2(
 ) -> Result<LinkedList<(Token, MetaData)>, Vec<ErrorCode>> {
     Ok(tokens)
 }
+
+
+#[cfg(test)]
+mod tests {
+    // #[test]
+    // fn t() {
+    //     assert!(6 == 6)
+    // }
+}

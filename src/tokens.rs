@@ -43,3 +43,11 @@ pub struct MetaData {
     pub end: usize,
     pub line_no_end: Option<usize>,
 }
+
+#[cfg(test)]
+mod tests {
+    // #[test]
+    // fn t() {
+    //     assert!(6 == 6)
+    // }
+}

@@ -11,3 +11,11 @@ macro_rules! c_function {
         }
     };
 }
+
+#[cfg(test)]
+mod tests {
+    // #[test]
+    // fn t() {
+    //     assert!(6 == 6)
+    // }
+}
