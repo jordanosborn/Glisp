@@ -23,7 +23,7 @@ pub struct MetaData {
     pub line_no: usize,
     pub start: usize,
     pub end: usize,
-    pub line_no_end: Option<usize>
+    pub line_no_end: Option<usize>,
 }
 
 //TODO: Check for matching closing tokens report errors
@@ -40,69 +40,78 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
         line_no: 0,
         start: 0,
         end: 0,
-        line_no_end: None
+        line_no_end: None,
     };
     let mut previous_character = '\0';
     for (line_no, line) in lines.iter().enumerate() {
+        let mut other_string = String::from("");
+        let mut other_string_metadata = MetaData {
+            line_no,
+            start: 0,
+            end: 0,
+            line_no_end: None,
+        };
         let mut inside_comment = false;
         let mut comment_string = String::from("");
         let mut comment_metadata = MetaData {
             line_no,
             start: 0,
             end: 0,
-            line_no_end: None
+            line_no_end: None,
         };
         for (c_index, character) in (*line).char_indices() {
             match character {
-                c if inside_comment => {
-                    comment_string.push(c);
+                ';' if !(inside_comment || inside_string) && previous_character != '\\' => {
+                    inside_comment = true;
+                    comment_metadata.start = c_index;
                 }
-                '"' if ! inside_comment  && previous_character != '\\' => {
+                '"' if !inside_comment && previous_character != '\\' => {
                     if inside_string {
-                        token_stack.push_back(
-                        (
+                        token_stack.push_back((
                             Token::String(string_string),
                             MetaData {
                                 end: c_index,
                                 line_no_end: Some(line_no),
                                 ..string_metadata
-                            }
-                        )
-                        );
+                            },
+                        ));
                         string_string = String::from("");
                         string_metadata = MetaData {
                             line_no: 0,
                             start: 0,
                             end: 0,
-                            line_no_end: None
+                            line_no_end: None,
                         };
-                        token_stack.push_back((Token::CloseQuote,
+                        token_stack.push_back((
+                            Token::CloseQuote,
                             MetaData {
                                 line_no,
                                 start: c_index,
                                 end: c_index,
-                                line_no_end: None
-                            })
-                        );
-
+                                line_no_end: None,
+                            },
+                        ));
                     } else {
                         string_metadata = MetaData {
                             line_no: line_no,
                             start: c_index,
                             end: 0,
-                            line_no_end: None
+                            line_no_end: None,
                         };
-                        token_stack.push_back((Token::OpenQuote,
+                        token_stack.push_back((
+                            Token::OpenQuote,
                             MetaData {
                                 line_no,
                                 start: c_index,
                                 end: c_index,
-                                line_no_end: None
-                            })
-                        );
+                                line_no_end: None,
+                            },
+                        ));
                     }
                     inside_string = !inside_string;
-
+                }
+                c if inside_comment => {
+                    comment_string.push(c);
                 }
                 c if inside_string => string_string.push(c),
                 '(' if previous_character != '\\' => token_stack.push_back((
@@ -111,7 +120,7 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
                         line_no,
                         start: c_index,
                         end: c_index,
-                        line_no_end: None
+                        line_no_end: None,
                     },
                 )),
                 ')' if previous_character != '\\' => token_stack.push_back((
@@ -120,16 +129,39 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
                         line_no,
                         start: c_index,
                         end: c_index,
-                        line_no_end: None
+                        line_no_end: None,
                     },
                 )),
-                ';' if !(inside_comment || inside_string) && previous_character != '\\' => {
-                    inside_comment = true;
-                    comment_metadata.start = c_index;
+                ' ' | '\t' => {
+                    if other_string.len() != 0 {
+                        token_stack.push_back((
+                            Token::Other(other_string),
+                            MetaData {
+                                end: c_index - 1,
+                                ..other_string_metadata
+                            },
+                        ));
+                        other_string = String::from("");
+                        other_string_metadata = MetaData {
+                            line_no,
+                            start: 0,
+                            end: 0,
+                            line_no_end: None,
+                        };
+                    }
                 }
-                _ => {
-
+                c if !(inside_string || inside_comment) => {
+                    if other_string.len() == 0 {
+                        other_string_metadata = MetaData {
+                            start: c_index,
+                            line_no,
+                            end: c_index,
+                            line_no_end: None,
+                        };
+                    }
+                    other_string.push(c);
                 }
+                _ => {}
             }
             previous_character = character;
         }
@@ -142,18 +174,27 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
                 },
             ))
         }
+        if other_string.len() != 0 {
+            token_stack.push_back((
+                Token::Other(other_string),
+                MetaData {
+                    end: line.len() - 1,
+                    ..other_string_metadata
+                },
+            ));
+        }
         if inside_string {
             string_string.push('\n');
         } else {
             token_stack.push_back((
-            Token::Newline,
-            MetaData {
-                line_no,
-                start: line.len(),
-                end: line.len(),
-                line_no_end: None
-            },
-        ));
+                Token::Newline,
+                MetaData {
+                    line_no,
+                    start: line.len(),
+                    end: line.len(),
+                    line_no_end: None,
+                },
+            ));
         }
     }
     if let Some(errs) = check_closing_tokens(&token_stack) {
@@ -161,5 +202,4 @@ pub fn tokenizer(contents: String) -> Result<LinkedList<(Token, MetaData)>, Vec<
     } else {
         Ok(token_stack)
     }
-
 }
