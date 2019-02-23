@@ -19,6 +19,8 @@ rayon = "1.0.3"
 maplit = "1.0.1"
 libc = "0.2.48"
 cpp = "0.5.1"
+regex = "1.1.0"
+lazy_static = "1.2.0"
 
 [build-dependencies]
 cpp_build = "0.5.1"

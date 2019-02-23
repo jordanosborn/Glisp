@@ -1,3 +1,3 @@
 pub enum ErrorCode {
-    GENERAL(String)
+    GENERAL(String),
 }

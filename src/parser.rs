@@ -1,3 +1,5 @@
+use regex::Regex;
+
 pub struct Node {
     pub value: String,
     pub children: Vec<Node>,
@@ -37,6 +39,17 @@ impl std::fmt::Display for Node {
 }
 
 pub fn construct_ast(contents: String) -> Result<Node, ErrorCode> {
+    let string_map: Vec<String> = Vec::new();
+    lazy_static! {
+        // Must run string first or strings might be consumed by comment regex if they contain ;
+        static ref string_regex: Regex = Regex::new(r#"([^\\]|^)(?P<string>".*?[^\\]")"#).unwrap();
+        static ref comment_regex: Regex = Regex::new(r"(^|[^\\])(;.*)").unwrap();
+    };
+    for cap in string_regex.captures_iter(&contents) {
+        println!("{}", &cap[0]);
+    }
+    let contents = comment_regex.replace_all(&contents, "");
+
     let ast = Node::new();
     let mut inside_comment = false;
     let mut inside_string = false;
@@ -46,8 +59,13 @@ pub fn construct_ast(contents: String) -> Result<Node, ErrorCode> {
     let mut line_number: usize = 1;
     let mut line_beginning: usize = 0;
     for (index, c) in contents.char_indices() {
-        if ! c.is_ascii() {
-            return Err(ErrorCode::GENERAL(format!("Error at {}:{} -> Non-Ascii character {} ", line_number, index - line_beginning + 1, c)));
+        if !c.is_ascii() {
+            return Err(ErrorCode::GENERAL(format!(
+                "Error at {}:{} -> Non-Ascii character {} ",
+                line_number,
+                index - line_beginning + 1,
+                c
+            )));
         } else if c == '\n' {
             line_number += 1;
             line_beginning = index + 1;
@@ -69,31 +87,30 @@ pub fn construct_ast(contents: String) -> Result<Node, ErrorCode> {
             ')' if previous_char != '\\' => {
                 nesting_level -= 1;
                 if nesting_level < 0 {
-                    return Err(
-                        ErrorCode::GENERAL(format!("Error at {}:{} -> Unmatched brace ", line_number, index - line_beginning + 1))
-                    );
+                    return Err(ErrorCode::GENERAL(format!(
+                        "Error at {}:{} -> Unmatched brace ",
+                        line_number,
+                        index - line_beginning + 1
+                    )));
                 }
             }
-            '\n' if ! inside_string => {
+            '\n' if !inside_string => {
                 inside_comment = false;
                 line_number += 1;
                 line_beginning = index + 1;
             }
-            ';' if previous_char != '\\' && ! inside_string && ! inside_comment => {
+            ';' if previous_char != '\\' && !inside_string && !inside_comment => {
                 inside_comment = true;
                 continue;
             }
             '"' if previous_char != '\\' => {
                 if inside_string {
                     inside_string = false;
-
                 } else {
 
                 }
             }
-            _ => {
-
-            }
+            _ => {}
         }
         previous_char = *c as char;
         println!("{}: {}", index, previous_char);
@@ -101,7 +118,11 @@ pub fn construct_ast(contents: String) -> Result<Node, ErrorCode> {
     if nesting_level == 0 {
         Ok(ast)
     } else {
-        Err(ErrorCode::GENERAL(format!("Error at {}:{} -> Unmatched brace ", line_number, line_beginning + 1)))
+        Err(ErrorCode::GENERAL(format!(
+            "Error at {}:{} -> Unmatched brace ",
+            line_number,
+            line_beginning + 1
+        )))
     }
 }
 
