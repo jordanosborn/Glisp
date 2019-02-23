@@ -20,12 +20,20 @@ pub struct MetaData {
     pub line_no: usize,
     pub start: usize,
     pub end: usize,
+    pub line_no_end: Option<usize>
 }
 
 pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
     let lines = contents.split("\n").collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
+    let mut string_string = String::from("");
+    let mut string_metadata = MetaData {
+        line_no: 0,
+        start: 0,
+        end: 0,
+        line_no_end: None
+    };
     let mut previous_character = '\0';
     for (line_no, line) in lines.iter().enumerate() {
         let mut inside_comment = false;
@@ -34,26 +42,62 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
             line_no,
             start: 0,
             end: 0,
+            line_no_end: None
         };
         for (c_index, character) in (*line).char_indices() {
             match character {
                 c if inside_comment => {
                     comment_string.push(c);
                 }
-                '(' => token_stack.push_back((
+                '"' if ! inside_comment  && previous_character != '\\' => {
+                    if inside_string {
+                        token_stack.push_back(
+                          (
+                              Token::String(string_string),
+                              MetaData {
+                                  end: c_index,
+                                  line_no_end: Some(line_no),
+                                  ..string_metadata
+                              }
+                          )
+                        );
+                        string_string = String::from("");
+                        string_metadata = MetaData {
+                            line_no: 0,
+                            start: 0,
+                            end: 0,
+                            line_no_end: None
+                        };
+
+                    } else {
+                        string_metadata = MetaData {
+                            line_no: line_no,
+                            start: c_index,
+                            end: 0,
+                            line_no_end: None
+                        };
+
+                    }
+                    inside_string = !inside_string;
+
+                }
+                c if inside_string => string_string.push(c),
+                '(' if previous_character != '\\' => token_stack.push_back((
                     Token::OpenBrace,
                     MetaData {
                         line_no,
                         start: c_index,
                         end: c_index,
+                        line_no_end: None
                     },
                 )),
-                ')' => token_stack.push_back((
+                ')' if previous_character != '\\' => token_stack.push_back((
                     Token::CloseBrace,
                     MetaData {
                         line_no,
                         start: c_index,
                         end: c_index,
+                        line_no_end: None
                     },
                 )),
                 ';' if !(inside_comment || inside_string) && previous_character != '\\' => {
@@ -62,6 +106,7 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                 }
                 _ => {}
             }
+            previous_character = character;
         }
         if comment_string.len() != 0 {
             token_stack.push_back((
@@ -72,14 +117,19 @@ pub fn tokenizer(contents: String) -> LinkedList<(Token, MetaData)> {
                 },
             ))
         }
-        token_stack.push_back((
+        if inside_string {
+            string_string.push('\n');
+        } else {
+            token_stack.push_back((
             Token::Newline,
             MetaData {
                 line_no,
                 start: line.len(),
                 end: line.len(),
+                line_no_end: None
             },
         ));
+        }
     }
     token_stack
 }
