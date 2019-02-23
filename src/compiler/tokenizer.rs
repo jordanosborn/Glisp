@@ -1,3 +1,4 @@
+use super::syntax;
 use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
 use std::collections::LinkedList;
@@ -9,7 +10,11 @@ fn check_closing_tokens<'a>(
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
         match token {
-            Token::OpenBrace | Token::OpenQuote | Token::OpenSquareBrace | Token::OpenCurlyBrace | Token::OpenAngularBrace => {
+            Token::OpenBrace
+            | Token::OpenQuote
+            | Token::OpenSquareBrace
+            | Token::OpenCurlyBrace
+            | Token::OpenAngularBrace => {
                 unmatched_tokens.push((token, metadata));
             }
             Token::CloseQuote => {
@@ -164,7 +169,6 @@ pub fn tokenize<'a>(
     contents: String,
 ) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
-    let literals = vec!['+', '-', ':', '|','/','%','^','&','*', '$', '#', ',', '.', '!', '@', '?', '='];
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
     let mut string_string = String::from("");
@@ -196,7 +200,10 @@ pub fn tokenize<'a>(
         };
         for (c_index, character) in (*line).char_indices() {
             match character {
-                ';' if !(inside_comment || inside_string) && previous_character != '\\' => {
+                c if c == syntax::comment()
+                    && !(inside_comment || inside_string)
+                    && previous_character != '\\' =>
+                {
                     inside_comment = true;
                     comment_metadata.start = c_index;
                 }
@@ -352,7 +359,7 @@ pub fn tokenize<'a>(
                         };
                     }
                 }
-                c if literals.as_slice().contains(&c)  => token_stack.push_back((
+                c if syntax::literals().contains(&c) => token_stack.push_back((
                     Token::Literal(c),
                     MetaData {
                         line_no,
@@ -360,8 +367,8 @@ pub fn tokenize<'a>(
                         end: c_index,
                         line_no_end: None,
                         filename,
-                    })
-                ),
+                    },
+                )),
                 c if !(inside_string || inside_comment) => {
                     if other_string.is_empty() {
                         other_string_metadata = MetaData {
