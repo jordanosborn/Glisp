@@ -352,7 +352,7 @@ pub fn tokenize<'a>(
                         };
                     }
                 }
-                c if (|| literals.iter().any(|x| *x == c))()  => token_stack.push_back((
+                c if literals.as_slice().contains(&c)  => token_stack.push_back((
                     Token::Literal(c),
                     MetaData {
                         line_no,

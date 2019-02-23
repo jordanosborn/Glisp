@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 mod compiler;
 mod errors;
+#[allow(unused_imports)]
 use compiler::{parser, tokenizer, tokens};
 
 #[macro_use]
