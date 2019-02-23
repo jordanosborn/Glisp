@@ -32,6 +32,7 @@ pub enum Token {
     CloseAngularBrace,
     OpenQuote,
     CloseQuote,
+    Literal(char),
     Ident,
     Type(Type),
     Builtin(Keyword),

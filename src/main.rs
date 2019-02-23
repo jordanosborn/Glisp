@@ -17,14 +17,9 @@ fn main() {
         let contents =
             std::fs::read_to_string(filename).expect("Something went wrong reading the file");
         match tokenizer::tokenize(filename, contents) {
-            Ok(t) => match parser::parse(filename, t) {
-                Ok(t) => {
-                    println!("{}", t);
-                }
-                Err(e) => {
-                    println!("{}", e);
-                }
-            },
+            Ok(t) => {
+                println!("{:?}", t);
+            }
             Err(e) => {
                 println!("{}", e);
             }

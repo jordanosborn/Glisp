@@ -164,6 +164,7 @@ pub fn tokenize<'a>(
     contents: String,
 ) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
+    let literals = vec!['+', '-', ':', '|','/','%','^','&','*', '$', '#', ',', '.', '!', '@', '?', '='];
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
     let mut string_string = String::from("");
@@ -351,6 +352,16 @@ pub fn tokenize<'a>(
                         };
                     }
                 }
+                c if (|| literals.iter().any(|x| *x == c))()  => token_stack.push_back((
+                    Token::Literal(c),
+                    MetaData {
+                        line_no,
+                        start: c_index,
+                        end: c_index,
+                        line_no_end: None,
+                        filename,
+                    })
+                ),
                 c if !(inside_string || inside_comment) => {
                     if other_string.is_empty() {
                         other_string_metadata = MetaData {
