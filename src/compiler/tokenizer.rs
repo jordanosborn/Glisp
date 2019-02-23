@@ -420,6 +420,7 @@ pub fn tokenize<'a>(
     }
 }
 
+//TODO: finish second pass convert Other tokens in to other types
 fn tokenize_pass2<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
 ) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
