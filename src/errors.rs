@@ -2,7 +2,7 @@ use crate::tokens;
 #[derive(Debug, Clone)]
 pub enum ErrorCode<'a> {
     General(String),
-    SyntaxError(String, tokens::Token<'a>, tokens::MetaData<'a>),
+    SyntaxError(String, tokens::Token, tokens::MetaData<'a>),
 }
 
 pub struct ErrorCodeList<'a>(Vec<ErrorCode<'a>>);
