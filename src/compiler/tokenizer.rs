@@ -462,9 +462,7 @@ fn tokenize_pass2<'a>(
         match t {
             (Token::Other(s), metadata) => {
                 //TODO: finish second pass convert Other tokens in to other types
-                token_stack.push_back((
-                    Token::Other(s.clone()), *metadata
-                ));
+                token_stack.push_back((Token::Other(s.clone()), *metadata));
             }
             t => {
                 token_stack.push_back(t.clone());
