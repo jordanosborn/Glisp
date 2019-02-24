@@ -5,8 +5,8 @@ use std::collections::LinkedList;
 // use regex::Regex;
 
 fn check_closing_tokens<'a>(
-    tokens: LinkedList<(Token, MetaData<'a>)>,
-) -> (Option<ErrorCodeList<'a>>, LinkedList<(Token, MetaData<'a>)>) {
+    tokens: LinkedList<(Token<'a>, MetaData<'a>)>,
+) -> (Option<ErrorCodeList>, LinkedList<(Token<'a>, MetaData<'a>)>) {
     let mut errs = ErrorCodeList::new();
     let mut unmatched_tokens = Vec::new();
     for (token, metadata) in tokens.iter() {
@@ -169,7 +169,7 @@ fn check_closing_tokens<'a>(
 pub fn tokenize<'a>(
     filename: &'a str,
     contents: String,
-) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
+) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList> {
     let lines = contents.split('\n').collect::<Vec<&str>>();
     let mut token_stack = LinkedList::new();
     let mut inside_string = false;
@@ -237,7 +237,7 @@ pub fn tokenize<'a>(
                 '"' if !inside_comment && previous_character != '\\' => {
                     if inside_string {
                         token_stack.push_back((
-                            Token::String(string_string),
+                            Token::String(&string_string),
                             MetaData {
                                 end: c_index,
                                 line_no_end: Some(line_no),
@@ -370,7 +370,7 @@ pub fn tokenize<'a>(
                 ' ' | '\t' => {
                     if !other_string.is_empty() {
                         token_stack.push_back((
-                            Token::Other(other_string),
+                            Token::Other(&other_string),
                             MetaData {
                                 end: c_index - 1,
                                 ..other_string_metadata
@@ -414,7 +414,7 @@ pub fn tokenize<'a>(
         }
         if !comment_string.is_empty() {
             token_stack.push_back((
-                Token::Comment(comment_string),
+                Token::Comment(&comment_string),
                 MetaData {
                     end: line.len() - 1,
                     ..comment_metadata
@@ -423,7 +423,7 @@ pub fn tokenize<'a>(
         }
         if !other_string.is_empty() {
             token_stack.push_back((
-                Token::Other(other_string),
+                Token::Other(&other_string),
                 MetaData {
                     end: line.len() - 1,
                     ..other_string_metadata
@@ -456,9 +456,20 @@ pub fn tokenize<'a>(
 
 //TODO: finish second pass convert Other tokens in to other types
 fn tokenize_pass2<'a>(
-    tokens: LinkedList<(Token, MetaData<'a>)>,
-) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList<'a>> {
-    Ok(tokens)
+    tokens: LinkedList<(Token<'a>, MetaData<'a>)>,
+) -> Result<LinkedList<(Token<'a>, MetaData<'a>)>, ErrorCodeList> {
+    let mut token_stack = LinkedList::new();
+    for t in tokens.iter() {
+        match t {
+            (Token::Other(_s), _metadata) => {
+                //TODO: finish
+            }
+            t => {
+                token_stack.push_back(*t);
+            }
+        }
+    }
+    Ok(token_stack)
 }
 
 #[cfg(test)]

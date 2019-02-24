@@ -39,8 +39,8 @@ impl std::fmt::Display for Node {
     }
 }
 
-pub fn parse<'a>(
-    _filename: &'a str,
+pub fn parse<'a> (
+    _filename: &'static str,
     _tokens: LinkedList<(Token, MetaData)>,
 ) -> Result<Node, ErrorCode<'a>> {
     Ok(Node::new())

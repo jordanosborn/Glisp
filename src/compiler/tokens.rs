@@ -21,8 +21,8 @@ pub struct Rational {
 
 impl Rational {}
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum Token {
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Token<'a> {
     OpenBrace,
     CloseBrace,
     OpenSquareBrace,
@@ -38,10 +38,10 @@ pub enum Token {
     Ident,
     Type(Type),
     Builtin(Keyword),
-    String(String),
-    Comment(String),
+    String(&'a str),
+    Comment(&'a str),
     Rational(Rational),
-    Other(String),
+    Other(&'a str),
     Newline,
 }
 
