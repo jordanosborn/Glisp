@@ -15,10 +15,8 @@ matrix:
   allow_failures:
     - rust: nightly
 
-before_cache: |
-  RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin -f
-
 before_script:
+  - RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin -f
   - rustup component add clippy
 
 script:
