@@ -182,6 +182,10 @@ pub fn tokenize<'a>(
     };
     let mut previous_character = '\0';
     for (line_no, line) in lines.iter().enumerate() {
+        let mut start_of_line = true;
+        let mut space_indent_count = 0;
+        let mut tab_indent_count = 0;
+
         let mut other_string = String::from("");
         let mut other_string_metadata = MetaData {
             line_no,
@@ -200,7 +204,28 @@ pub fn tokenize<'a>(
             filename,
         };
         for (c_index, character) in (*line).char_indices() {
+            if start_of_line && character != ' ' && character != '\t' {
+                start_of_line = false;
+                if space_indent_count != 0 || tab_indent_count != 0 {
+                    token_stack.push_back((
+                        Token::Indentation((space_indent_count, tab_indent_count)),
+                        MetaData {
+                            start: 0,
+                            end: (space_indent_count + tab_indent_count - 1) as usize,
+                            line_no,
+                            line_no_end: None,
+                            filename,
+                        },
+                    ));
+                }
+            }
             match character {
+                ' ' if start_of_line => {
+                    space_indent_count += 1;
+                }
+                '\t' if start_of_line => {
+                    tab_indent_count += 1;
+                }
                 c if c == syntax::comment()
                     && !(inside_comment || inside_string)
                     && previous_character != '\\' =>

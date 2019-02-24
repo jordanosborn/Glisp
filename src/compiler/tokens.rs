@@ -34,6 +34,7 @@ pub enum Token {
     OpenQuote,
     CloseQuote,
     Literal(char),
+    Indentation((u64, u64)),
     Ident,
     Type(Type),
     Builtin(Keyword),
