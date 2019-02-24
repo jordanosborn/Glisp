@@ -116,7 +116,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "glisp"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "cc 1.0.29 (registry+https://github.com/rust-lang/crates.io-index)",
  "cpp 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
