@@ -454,7 +454,6 @@ pub fn tokenize<'a>(
     }
 }
 
-//TODO: finish second pass convert Other tokens in to other types
 fn tokenize_pass2<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
 ) -> Result<LinkedList<(Token, MetaData<'a>)>, ErrorCodeList> {
@@ -462,10 +461,8 @@ fn tokenize_pass2<'a>(
     for t in tokens.iter() {
         match t {
             (Token::Other(s), metadata) => {
-                //TODO: finish
-                token_stack.push_back((
-                    Token::Other(s.clone()), *metadata
-                ));
+                //TODO: finish second pass convert Other tokens in to other types
+                token_stack.push_back((Token::Other(s.clone()), *metadata));
             }
             t => {
                 token_stack.push_back(t.clone());
