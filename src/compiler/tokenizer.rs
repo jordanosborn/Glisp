@@ -2,7 +2,7 @@ use super::syntax;
 use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
 use std::collections::LinkedList;
-use regex::Regex;
+// use regex::Regex;
 
 fn check_closing_tokens<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,

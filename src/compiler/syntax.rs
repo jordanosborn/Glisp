@@ -1,4 +1,4 @@
-use regex::Regex;
+//use regex::Regex;
 pub const fn literals() -> [char; 17] {
     [
         '+', '-', ':', '|', '/', '%', '^', '&', '*', '$', ';', ',', '.', '!', '@', '?', '=',
