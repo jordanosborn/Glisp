@@ -165,6 +165,7 @@ fn check_closing_tokens<'a>(
     }
 }
 
+#[allow(clippy::cyclomatic_complexity)]
 pub fn tokenize<'a>(
     filename: &'a str,
     contents: String,
