@@ -2,7 +2,8 @@ use super::syntax;
 use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
 use std::collections::LinkedList;
-// use regex::Regex;
+
+//TODO: chars and multi-line comments
 
 fn check_closing_tokens<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
@@ -386,7 +387,7 @@ pub fn tokenize<'a>(
                         };
                     }
                 }
-                c if syntax::literals().contains(&c) => token_stack.push_back((
+                c if syntax::is_literal(&c.to_string()) => token_stack.push_back((
                     Token::Literal(c),
                     MetaData {
                         line_no,
@@ -462,7 +463,9 @@ fn tokenize_pass2<'a>(
         match t {
             (Token::Other(s), metadata) => {
                 //TODO: finish second pass convert Other tokens in to other types
-                token_stack.push_back((Token::Other(s.clone()), *metadata));
+                match s {
+                    _ => token_stack.push_back((Token::Other(s.clone()), *metadata)),
+                }
             }
             t => {
                 token_stack.push_back(t.clone());

@@ -8,12 +8,6 @@ pub enum Type {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub enum Keyword {
-    FUNC,
-    PRINT,
-}
-
-#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Rational {
     pub numerator: i64,
     pub denominator: i64,
@@ -33,14 +27,20 @@ pub enum Token {
     CloseAngularBrace,
     OpenQuote,
     CloseQuote,
+    OpenMultilineComment,
+    CloseMultilineComment,
     Literal(char),
     Indentation((u64, u64)),
-    Ident,
+    Identifier(String),
     Type(Type),
-    Builtin(Keyword),
-    String(String),
+    Keyword(String),
     Comment(String),
+    MultilineComment(String),
+    String(String),
+    Integer(String),
+    Float(String),
     Rational(Rational),
+    Character(char),
     Other(String),
     Newline,
 }
