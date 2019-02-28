@@ -187,6 +187,7 @@ pub fn tokenize<'a>(
         let mut start_of_line = true;
         let mut space_indent_count = 0;
         let mut tab_indent_count = 0;
+        let mut double_backslash = false;
 
         let mut other_string = String::from("");
         let mut other_string_metadata = MetaData {
@@ -235,10 +236,11 @@ pub fn tokenize<'a>(
                     inside_comment = true;
                     comment_metadata.start = c_index;
                 }
-                '"' if !inside_comment && previous_character != '\\' => {
+                '"' if !inside_comment && (previous_character != '\\' || double_backslash) => {
                     if inside_string {
                         token_stack.push_back((
-                            Token::String(string_string),
+                            //TODO: this does not work as expected
+                            Token::String(string_string.replace("\\\\", "\\")),
                             MetaData {
                                 end: c_index,
                                 line_no_end: Some(line_no),
@@ -411,6 +413,12 @@ pub fn tokenize<'a>(
                 }
                 _ => {}
             }
+            double_backslash =
+                if character == '\\' && previous_character == '\\' && ! double_backslash {
+                    true
+                } else {
+                    false
+                };
             previous_character = character;
         }
         if !comment_string.is_empty() {
@@ -466,6 +474,9 @@ fn tokenize_pass2<'a>(
                 match s {
                     _ => token_stack.push_back((Token::Other(s.clone()), *metadata)),
                 }
+            }
+            (Token::String(s), metadata) if syntax::is_character(s) => {
+                token_stack.push_back((Token::Character(s.clone()), *metadata))
             }
             t => {
                 token_stack.push_back(t.clone());

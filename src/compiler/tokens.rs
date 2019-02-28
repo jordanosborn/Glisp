@@ -40,7 +40,7 @@ pub enum Token {
     Integer(String),
     Float(String),
     Rational(Rational),
-    Character(char),
+    Character(String),
     Other(String),
     Newline,
 }
