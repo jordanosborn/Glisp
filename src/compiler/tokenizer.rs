@@ -3,7 +3,7 @@ use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
 use std::collections::LinkedList;
 
-//TODO: chars and multi-line comments
+//TODO: multi-line comments
 
 fn check_closing_tokens<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
@@ -239,7 +239,6 @@ pub fn tokenize<'a>(
                 '"' if !inside_comment && (previous_character != '\\' || double_backslash) => {
                     if inside_string {
                         token_stack.push_back((
-                            //TODO: this does not work as expected
                             Token::String(string_string.replace("\\\\", "\\")),
                             MetaData {
                                 end: c_index,
