@@ -222,6 +222,25 @@ pub fn tokenize<'a>(
                     ));
                 }
             }
+
+            if !other_string.is_empty() && syntax::is_non_ident_character(&character.to_string()) {
+                token_stack.push_back((
+                    Token::Other(other_string),
+                    MetaData {
+                        end: c_index - 1,
+                        ..other_string_metadata
+                    },
+                ));
+                other_string = String::from("");
+                other_string_metadata = MetaData {
+                    line_no,
+                    start: 0,
+                    end: 0,
+                    line_no_end: None,
+                    filename,
+                };
+            }
+
             match character {
                 ' ' if start_of_line => {
                     space_indent_count += 1;
