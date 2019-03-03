@@ -2,6 +2,7 @@
     "cSpell.words": [
         "complexity",
         "cyclomatic",
+        "getcwd",
         "glisp",
         "maplit",
         "parallelize"
@@ -36,5 +37,6 @@
     "python.unitTest.promptToConfigure": false,
     "python.unitTest.pyTestEnabled": false,
     "python.unitTest.unittestEnabled": false,
-    "python.unitTest.nosetestsEnabled": false
+    "python.unitTest.nosetestsEnabled": false,
+    "python.linting.pylintEnabled": true
 }

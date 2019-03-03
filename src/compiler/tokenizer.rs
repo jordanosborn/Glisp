@@ -482,11 +482,8 @@ fn tokenize_pass2<'a>(
     let mut token_stack = LinkedList::new();
     for t in tokens.iter() {
         match t {
-            (Token::Other(s), metadata) => {
-                //TODO: finish second pass convert Other tokens in to other types do merge for floats and rationals
-                match s {
-                    _ => token_stack.push_back((Token::Other(s.clone()), *metadata)),
-                }
+            (Token::Other(s), metadata) if syntax::is_integer(s) => {
+                token_stack.push_back((Token::Integer(s.clone()), *metadata))
             }
             (Token::String(s), metadata) if syntax::is_character(s) => {
                 token_stack.push_back((Token::Character(s.clone()), *metadata))
