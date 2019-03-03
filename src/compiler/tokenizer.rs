@@ -431,12 +431,7 @@ pub fn tokenize<'a>(
                 }
                 _ => {}
             }
-            double_backslash =
-                if character == '\\' && previous_character == '\\' && ! double_backslash {
-                    true
-                } else {
-                    false
-                };
+            double_backslash = character == '\\' && previous_character == '\\' && ! double_backslash;
             previous_character = character;
         }
         if !comment_string.is_empty() {
@@ -488,7 +483,7 @@ fn tokenize_pass2<'a>(
     for t in tokens.iter() {
         match t {
             (Token::Other(s), metadata) => {
-                //TODO: finish second pass convert Other tokens in to other types
+                //TODO: finish second pass convert Other tokens in to other types do merge for floats and rationals
                 match s {
                     _ => token_stack.push_back((Token::Other(s.clone()), *metadata)),
                 }

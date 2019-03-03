@@ -20,14 +20,14 @@ pub fn is_literal(text: &str) -> bool {
 
 pub fn is_integer(text: &str) -> bool {
     lazy_static! {
-        static ref RE: Regex = Regex::new("").unwrap();
+        static ref RE: Regex = Regex::new("^[0-9]+b{0,1}[0-9]+$").unwrap();
     }
     RE.is_match(text)
 }
 
 pub fn is_non_ident_character(text: &str) -> bool {
     lazy_static! {
-        static ref RE: Regex = Regex::new("^[^ \t\"\\(\\)\\[\\]\\(\\)<>\\{\\}]$").unwrap();
+        static ref RE: Regex = Regex::new(r#"^[ \t"\(\)\[\]\(\)<>\{\}+:|/%^&*'$;,.!@?=-]$"#).unwrap();
     }
-    RE.is_match(text) && is_literal(text)
+    RE.is_match(text)
 }
