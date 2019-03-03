@@ -27,7 +27,8 @@ pub fn is_integer(text: &str) -> bool {
 
 pub fn is_non_ident_character(text: &str) -> bool {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r#"^[ \t"\(\)\[\]\(\)<>\{\}+:|/%^&*'$;,.!@?=-]$"#).unwrap();
+        static ref RE: Regex =
+            Regex::new(r#"^[ \t"\(\)\[\]\(\)<>\{\}+:|/%^&*'$;,.!@?=-]$"#).unwrap();
     }
     RE.is_match(text)
 }

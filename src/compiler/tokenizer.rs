@@ -431,7 +431,7 @@ pub fn tokenize<'a>(
                 }
                 _ => {}
             }
-            double_backslash = character == '\\' && previous_character == '\\' && ! double_backslash;
+            double_backslash = character == '\\' && previous_character == '\\' && !double_backslash;
             previous_character = character;
         }
         if !comment_string.is_empty() {
