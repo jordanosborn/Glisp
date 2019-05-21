@@ -2,3 +2,4 @@
 **/*.rs.bk
 .pytest_cache
 glisp
+.DS_Store
