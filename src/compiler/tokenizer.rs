@@ -2,7 +2,8 @@ use super::syntax;
 use super::tokens::*;
 use crate::errors::{ErrorCode, ErrorCodeList};
 use std::collections::LinkedList;
-// use regex::Regex;
+
+//TODO: multi-line comments
 
 fn check_closing_tokens<'a>(
     tokens: LinkedList<(Token, MetaData<'a>)>,
@@ -186,6 +187,7 @@ pub fn tokenize<'a>(
         let mut start_of_line = true;
         let mut space_indent_count = 0;
         let mut tab_indent_count = 0;
+        let mut double_backslash = false;
 
         let mut other_string = String::from("");
         let mut other_string_metadata = MetaData {
@@ -220,6 +222,25 @@ pub fn tokenize<'a>(
                     ));
                 }
             }
+
+            if !other_string.is_empty() && syntax::is_non_ident_character(&character.to_string()) {
+                token_stack.push_back((
+                    Token::Other(other_string),
+                    MetaData {
+                        end: c_index - 1,
+                        ..other_string_metadata
+                    },
+                ));
+                other_string = String::from("");
+                other_string_metadata = MetaData {
+                    line_no,
+                    start: 0,
+                    end: 0,
+                    line_no_end: None,
+                    filename,
+                };
+            }
+
             match character {
                 ' ' if start_of_line => {
                     space_indent_count += 1;
@@ -234,10 +255,10 @@ pub fn tokenize<'a>(
                     inside_comment = true;
                     comment_metadata.start = c_index;
                 }
-                '"' if !inside_comment && previous_character != '\\' => {
+                '"' if !inside_comment && (previous_character != '\\' || double_backslash) => {
                     if inside_string {
                         token_stack.push_back((
-                            Token::String(string_string),
+                            Token::String(string_string.replace("\\\\", "\\")),
                             MetaData {
                                 end: c_index,
                                 line_no_end: Some(line_no),
@@ -386,7 +407,7 @@ pub fn tokenize<'a>(
                         };
                     }
                 }
-                c if syntax::literals().contains(&c) => token_stack.push_back((
+                c if syntax::is_literal(&c.to_string()) => token_stack.push_back((
                     Token::Literal(c),
                     MetaData {
                         line_no,
@@ -410,6 +431,7 @@ pub fn tokenize<'a>(
                 }
                 _ => {}
             }
+            double_backslash = character == '\\' && previous_character == '\\' && !double_backslash;
             previous_character = character;
         }
         if !comment_string.is_empty() {
@@ -460,9 +482,11 @@ fn tokenize_pass2<'a>(
     let mut token_stack = LinkedList::new();
     for t in tokens.iter() {
         match t {
-            (Token::Other(s), metadata) => {
-                //TODO: finish second pass convert Other tokens in to other types
-                token_stack.push_back((Token::Other(s.clone()), *metadata));
+            (Token::Other(s), metadata) if syntax::is_integer(s) => {
+                token_stack.push_back((Token::Integer(s.clone()), *metadata))
+            }
+            (Token::String(s), metadata) if syntax::is_character(s) => {
+                token_stack.push_back((Token::Character(s.clone()), *metadata))
             }
             t => {
                 token_stack.push_back(t.clone());
